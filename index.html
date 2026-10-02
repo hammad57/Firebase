@@ -13,35 +13,16 @@
   <div id="toast" class="toast" aria-live="polite"></div>
 
   <div id="authView" class="auth-shell">
-    <div class="auth-card card">
+    <div class="auth-card card guest-loading-card">
       <div class="brand-block">
         <div class="brand-logo">C</div>
         <div>
           <div class="brand-name">CoinVault</div>
-          <div class="muted">Live market portfolio</div>
+          <div class="muted">Preparing your secure guest wallet</div>
         </div>
       </div>
-
-      <div class="auth-tabs">
-        <button class="tab-btn active" data-auth-tab="login">Login</button>
-        <button class="tab-btn" data-auth-tab="register">Register</button>
-      </div>
-
-      <form id="loginForm" class="auth-form">
-        <label>Name<input id="loginName" type="text" autocomplete="username" maxlength="80" placeholder="Your name" required></label>
-        <label>Password<input id="loginPassword" type="password" autocomplete="current-password" placeholder="••••••••" required></label>
-        <button class="btn primary wide" type="submit">Login</button>
-      </form>
-
-      <form id="registerForm" class="auth-form hidden">
-        <label>Name<input id="registerName" type="text" autocomplete="name" maxlength="80" placeholder="Your name" required></label>
-        <label>Password<input id="registerPassword" type="password" autocomplete="new-password" minlength="6" placeholder="Minimum 6 characters" required></label>
-        <button class="btn primary wide" type="submit">Create account</button>
-      </form>
-
-      <div class="auth-note">
-        Market prices are public Binance market data. CoinVault is not Binance and does not place trades on Binance.
-      </div>
+      <div class="guest-spinner" aria-hidden="true"></div>
+      <p class="muted center">No login or registration is required. A random username is created automatically.</p>
     </div>
   </div>
 
@@ -55,7 +36,7 @@
             <div id="welcomeName" class="muted tiny">Welcome</div>
           </div>
         </div>
-        <button id="logoutBtn" class="icon-btn" title="Logout">↪</button>
+        <button id="logoutBtn" class="icon-btn" title="New random user">↻</button>
       </div>
     </header>
 
@@ -201,7 +182,7 @@
         <div class="page-heading"><div><h2>Account</h2><p>Profile, referral and help.</p></div></div>
         <div class="card profile-card">
           <div class="profile-avatar" id="profileInitial">C</div>
-          <div class="profile-main"><strong id="profileName">—</strong><span id="profileEmail" class="muted">—</span></div>
+          <div class="profile-main"><strong id="profileName">—</strong><span id="profileEmail" class="muted">Anonymous guest account • this browser</span></div>
         </div>
         <div class="card referral-card">
           <div class="section-head"><span>Referral system</span><span id="referralCount">0 users</span></div>
@@ -224,25 +205,6 @@
     </nav>
   </div>
 
-  <script>
-    // Fallback UI handler so the Login/Register tabs still work when this page is
-    // opened directly with file:// and the ES-module app cannot load.
-    (() => {
-      const loginTab = document.querySelector('[data-auth-tab="login"]');
-      const registerTab = document.querySelector('[data-auth-tab="register"]');
-      const loginForm = document.getElementById('loginForm');
-      const registerForm = document.getElementById('registerForm');
-      const switchTab = (tab) => {
-        const isRegister = tab === 'register';
-        loginTab?.classList.toggle('active', !isRegister);
-        registerTab?.classList.toggle('active', isRegister);
-        loginForm?.classList.toggle('hidden', isRegister);
-        registerForm?.classList.toggle('hidden', !isRegister);
-      };
-      loginTab?.addEventListener('click', (e) => { e.preventDefault(); switchTab('login'); });
-      registerTab?.addEventListener('click', (e) => { e.preventDefault(); switchTab('register'); });
-    })();
-  </script>
   <script type="module" src="app.js"></script>
 </body>
 </html>
