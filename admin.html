@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b1220">
+  <link rel="stylesheet" href="styles.css">
+  <title>CoinVault Admin</title>
+</head>
+<body class="admin-body">
+  <div id="toast" class="toast" aria-live="polite"></div>
+  <div id="adminAuth" class="auth-shell">
+    <div class="auth-card card">
+      <div class="brand-block"><div class="brand-logo">C</div><div><div class="brand-name">CoinVault Admin</div><div class="muted">Secure admin console</div></div></div>
+      <form id="adminLoginForm" class="auth-form">
+        <label>Email<input id="adminEmail" type="email" required></label>
+        <label>Password<input id="adminPassword" type="password" required></label>
+        <button class="btn primary wide">Sign in</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="adminView" class="admin-app hidden">
+    <header class="topbar"><div class="topbar-inner"><div class="brand-block compact"><div class="brand-logo">C</div><div><div class="brand-name">CoinVault Admin</div><div class="muted tiny">Operations & controls</div></div></div><div class="top-actions"><button id="refreshBtn" class="btn ghost small">Refresh</button><button id="adminLogoutBtn" class="icon-btn">↪</button></div></div></header>
+    <main class="page-wrap admin-wrap">
+      <div class="admin-metrics">
+        <div class="metric card"><span>Users</span><strong id="mUsers">0</strong></div>
+        <div class="metric card"><span>Pending deposits</span><strong id="mDeposits">0</strong></div>
+        <div class="metric card"><span>Pending withdrawals</span><strong id="mWithdrawals">0</strong></div>
+        <div class="metric card"><span>USDT/PKR</span><strong id="mRate">—</strong></div>
+      </div>
+
+      <section class="card admin-panel">
+        <div class="section-head"><span>Settings</span><span class="muted">Server-side purchase rules</span></div>
+        <div class="form-grid">
+          <label>USDT → PKR<input id="setRate" class="text-input" type="number" step="0.01"></label>
+          <label>Trading fee %<input id="setFee" class="text-input" type="number" step="0.01"></label>
+          <label>Minimum buy (PKR)<input id="setMinBuy" class="text-input" type="number" step="0.01"></label>
+          <label>Maximum buy (PKR)<input id="setMaxBuy" class="text-input" type="number" step="0.01"></label>
+          <label>Referral bonus %<input id="setReferralPct" class="text-input" type="number" step="0.01"></label>
+          <label>Referral bonus cap (PKR)<input id="setReferralCap" class="text-input" type="number" step="0.01"></label>
+        </div>
+        <button id="saveSettingsBtn" class="btn primary">Save settings</button>
+      </section>
+
+      <section class="card admin-panel">
+        <div class="section-head"><span>Pending deposits</span><span class="muted">Approve adds funds; reject closes request.</span></div>
+        <div id="depositAdminList" class="admin-list"></div>
+      </section>
+
+      <section class="card admin-panel">
+        <div class="section-head"><span>Pending withdrawals</span><span class="muted">Approve keeps the held amount removed; reject refunds it.</span></div>
+        <div id="withdrawAdminList" class="admin-list"></div>
+      </section>
+
+      <section class="card admin-panel">
+        <div class="section-head"><span>Users</span><span class="muted">Search profile / balance.</span></div>
+        <input id="userFilter" class="text-input" placeholder="Search name, email, phone or UID…">
+        <div id="userAdminList" class="admin-list"></div>
+      </section>
+
+      <section class="card danger-note"><strong>Security</strong><p>Do not put a Firebase service-account JSON, Admin SDK credentials, WhatsApp API secret, or private exchange key in GitHub. Cloud Functions keeps those secrets server-side.</p></section>
+    </main>
+  </div>
+
+  <script type="module" src="admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b1220">
+  <meta name="description" content="CoinVault mobile crypto portfolio app with Firebase and Binance public market data.">
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="styles.css">
+  <title>CoinVault</title>
+</head>
+<body>
+  <div id="toast" class="toast" aria-live="polite"></div>
+
+  <div id="authView" class="auth-shell">
+    <div class="auth-card card">
+      <div class="brand-block">
+        <div class="brand-logo">C</div>
+        <div>
+          <div class="brand-name">CoinVault</div>
+          <div class="muted">Live market portfolio</div>
+        </div>
+      </div>
+
+      <div class="auth-tabs">
+        <button class="tab-btn active" data-auth-tab="login">Login</button>
+        <button class="tab-btn" data-auth-tab="register">Register</button>
+      </div>
+
+      <form id="loginForm" class="auth-form">
+        <label>Name<input id="loginName" type="text" autocomplete="username" maxlength="80" placeholder="Your name" required></label>
+        <label>Password<input id="loginPassword" type="password" autocomplete="current-password" placeholder="••••••••" required></label>
+        <button class="btn primary wide" type="submit">Login</button>
+      </form>
+
+      <form id="registerForm" class="auth-form hidden">
+        <label>Name<input id="registerName" type="text" autocomplete="name" maxlength="80" placeholder="Your name" required></label>
+        <label>Password<input id="registerPassword" type="password" autocomplete="new-password" minlength="6" placeholder="Minimum 6 characters" required></label>
+        <button class="btn primary wide" type="submit">Create account</button>
+      </form>
+
+      <div class="auth-note">
+        Market prices are public Binance market data. CoinVault is not Binance and does not place trades on Binance.
+      </div>
+    </div>
+  </div>
+
+  <div id="appView" class="app hidden">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="brand-block compact">
+          <div class="brand-logo">C</div>
+          <div>
+            <div class="brand-name">CoinVault</div>
+            <div id="welcomeName" class="muted tiny">Welcome</div>
+          </div>
+        </div>
+        <button id="logoutBtn" class="icon-btn" title="Logout">↪</button>
+      </div>
+    </header>
+
+    <main class="page-wrap">
+      <section id="homeSection" class="page-section active">
+        <div class="hero-grid">
+          <div class="card balance-card">
+            <div class="section-head"><span>Available Balance</span><span class="status-dot">● Live</span></div>
+            <div id="cashBalance" class="big-number">Rs. 0.00</div>
+            <div class="muted">Cash available for purchase / withdrawal</div>
+            <div class="balance-row"><span>Total portfolio value</span><strong id="portfolioValue">Rs. 0.00</strong></div>
+          </div>
+          <div class="card selected-card">
+            <div class="section-head"><span>Selected Coin</span><span id="selectedCoinBadge">—</span></div>
+            <div id="selectedCoinValue" class="big-number">Rs. 0.00</div>
+            <div class="balance-row"><span>Live price</span><strong id="selectedCoinPrice">—</strong></div>
+            <div class="balance-row"><span>24h</span><strong id="selectedCoinChange">—</strong></div>
+          </div>
+        </div>
+
+        <div class="card market-strip">
+          <div class="market-strip-main">
+            <div class="eyebrow">LIVE MARKET</div>
+            <div class="market-symbol-row">
+              <span id="marketCoinLabel" class="market-symbol">BTC</span>
+              <input id="coinSearch" class="coin-search" list="coinDatalist" placeholder="Search coin e.g. BTC">
+              <datalist id="coinDatalist"></datalist>
+            </div>
+          </div>
+          <div class="market-mini-values">
+            <span id="marketPrice">—</span>
+            <span id="marketPercent" class="muted">—</span>
+          </div>
+        </div>
+
+        <div class="card chart-card">
+          <div class="chart-controls">
+            <div class="segment" id="intervalControls">
+              <button data-interval="1m" class="segment-btn active">1m</button>
+              <button data-interval="5m" class="segment-btn">5m</button>
+              <button data-interval="15m" class="segment-btn">15m</button>
+              <button data-interval="1h" class="segment-btn">1H</button>
+              <button data-interval="4h" class="segment-btn">4H</button>
+              <button data-interval="1d" class="segment-btn">1D</button>
+            </div>
+            <div class="chart-actions">
+              <button id="fitChartBtn" class="btn ghost small">Fit</button>
+              <button id="fullChartBtn" class="btn ghost small">Full</button>
+            </div>
+          </div>
+          <div id="chart" class="chart"></div>
+          <div class="chart-footer"><span id="chartStatus">Loading market…</span><span>Binance public market data</span></div>
+        </div>
+
+        <div class="grid-2">
+          <button class="action-card" data-nav="buy"><span class="action-icon">＋</span><strong>Add / Buy Coin</strong><small>Buy from available balance</small></button>
+          <button class="action-card" data-nav="wallet"><span class="action-icon">⇄</span><strong>Convert Coin</strong><small>Convert one coin to another</small></button>
+          <button class="action-card" data-nav="wallet"><span class="action-icon">↑</span><strong>Add Money</strong><small>Submit deposit request</small></button>
+          <button class="action-card" data-nav="wallet"><span class="action-icon">↓</span><strong>Withdrawal</strong><small>Request cash withdrawal</small></button>
+        </div>
+      </section>
+
+      <section id="marketSection" class="page-section">
+        <div class="page-heading"><div><h2>Market</h2><p>All active Binance USDT spot pairs available to the public market feed.</p></div></div>
+        <div class="card">
+          <div class="search-row"><input id="marketFilter" class="text-input" placeholder="Search symbol or coin…"><span id="coinCount" class="muted"></span></div>
+          <div id="marketList" class="market-list"></div>
+        </div>
+      </section>
+
+      <section id="buySection" class="page-section">
+        <div class="page-heading"><div><h2>Buy Package</h2><p>First purchase fee is waived. Later purchases use the configured trading fee.</p></div></div>
+        <div id="packageGrid" class="package-grid"></div>
+        <div class="card buy-manual-card">
+          <h3>Manual buy</h3>
+          <p class="muted">Choose any active coin and an amount within the admin limits.</p>
+          <div class="form-grid">
+            <label>Coin<input id="manualBuyCoin" class="text-input" list="coinDatalist" placeholder="BTC"></label>
+            <label>Amount (PKR)<input id="manualBuyAmount" class="text-input" type="number" min="1" step="0.01" placeholder="1000"></label>
+          </div>
+          <button id="manualBuyBtn" class="btn primary wide">Buy now</button>
+          <div id="buyFeeHint" class="form-hint">—</div>
+        </div>
+      </section>
+
+      <section id="walletSection" class="page-section">
+        <div class="page-heading"><div><h2>Wallet</h2><p>Your holdings and money requests update from Firebase in real time.</p></div></div>
+
+        <div class="card">
+          <div class="section-head"><span>Holdings</span><span id="holdingCount" class="muted">0 coins</span></div>
+          <div id="holdingsList" class="holdings-list"></div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card form-card">
+            <h3>Add Money</h3>
+            <p class="muted">Send your payment first, then submit the details for admin approval.</p>
+            <form id="depositForm">
+              <label>Amount (PKR)<input id="depositAmount" class="text-input" type="number" min="1" step="0.01" required></label>
+              <label>Method<select id="depositMethod" class="select-input"><option>JazzCash</option><option>Easypaisa</option><option>Bank Transfer</option></select></label>
+              <label>Your account / sender number<input id="depositAccount" class="text-input" maxlength="60" required></label>
+              <label>Transaction ID / Reference<input id="depositTxn" class="text-input" maxlength="120" required></label>
+              <button class="btn primary wide">Submit deposit</button>
+            </form>
+          </div>
+
+          <div class="card form-card">
+            <h3>Withdrawal</h3>
+            <p class="muted">Requested amount is held from your available balance until admin approval/rejection.</p>
+            <form id="withdrawForm">
+              <label>Amount (PKR)<input id="withdrawAmount" class="text-input" type="number" min="1" step="0.01" required></label>
+              <label>Method<select id="withdrawMethod" class="select-input"><option>JazzCash</option><option>Easypaisa</option><option>Bank Transfer</option></select></label>
+              <label>Receiving account / IBAN<input id="withdrawAccount" class="text-input" maxlength="80" required></label>
+              <label>Account holder name<input id="withdrawHolder" class="text-input" maxlength="80" required></label>
+              <button class="btn warning wide">Request withdrawal</button>
+            </form>
+          </div>
+        </div>
+
+        <div class="card form-card">
+          <h3>Convert</h3>
+          <div class="form-grid">
+            <label>From<input id="convertFrom" class="text-input" list="coinDatalist" placeholder="BTC"></label>
+            <label>To<input id="convertTo" class="text-input" list="coinDatalist" placeholder="BNB"></label>
+            <label>Amount (source coin)<input id="convertQty" class="text-input" type="number" min="0" step="any" placeholder="0.001"></label>
+          </div>
+          <div id="convertQuote" class="quote-box">Enter From, To and amount to preview.</div>
+          <button id="convertBtn" class="btn primary wide">Convert coin</button>
+        </div>
+
+        <div class="card">
+          <div class="section-head"><span>Recent activity</span><span class="muted">Latest 25</span></div>
+          <div id="activityList" class="activity-list"></div>
+        </div>
+
+        <div class="card">
+          <div class="section-head"><span>Money requests</span><span class="muted">Deposit / Withdrawal</span></div>
+          <div id="requestList" class="activity-list"></div>
+        </div>
+      </section>
+
+      <section id="moreSection" class="page-section">
+        <div class="page-heading"><div><h2>Account</h2><p>Profile, referral and help.</p></div></div>
+        <div class="card profile-card">
+          <div class="profile-avatar" id="profileInitial">C</div>
+          <div class="profile-main"><strong id="profileName">—</strong><span id="profileEmail" class="muted">—</span></div>
+        </div>
+        <div class="card referral-card">
+          <div class="section-head"><span>Referral system</span><span id="referralCount">0 users</span></div>
+          <div class="referral-code"><span id="myReferralCode">—</span><button id="copyReferralBtn" class="btn ghost small">Copy</button></div>
+          <p class="muted">Share your referral code. Any referral reward amount is controlled from admin settings.</p>
+        </div>
+        <a class="help-card card" href="https://wa.me/923423944508?text=Assalam%20o%20Alaikum%2C%20mujhe%20CoinVault%20app%20main%20madad%20chahiye." target="_blank" rel="noopener">
+          <span class="action-icon">☏</span><div><strong>Help on WhatsApp</strong><small>0342-3944508</small></div><span>›</span>
+        </a>
+        <div class="card settings-note"><strong>Rates & fees</strong><div class="balance-row"><span>USDT → PKR reference rate</span><strong id="usdtPkrLabel">—</strong></div><div class="balance-row"><span>Trading fee</span><strong id="feeLabel">—</strong></div><div class="balance-row"><span>Minimum buy</span><strong id="minBuyLabel">—</strong></div></div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav">
+      <button class="nav-btn active" data-nav="home">⌂<span>Home</span></button>
+      <button class="nav-btn" data-nav="market">◴<span>Market</span></button>
+      <button class="nav-btn" data-nav="buy">＋<span>Buy</span></button>
+      <button class="nav-btn" data-nav="wallet">▣<span>Wallet</span></button>
+      <button class="nav-btn" data-nav="more">☰<span>More</span></button>
+    </nav>
+  </div>
+
+  <script>
+    // Fallback UI handler so the Login/Register tabs still work when this page is
+    // opened directly with file:// and the ES-module app cannot load.
+    (() => {
+      const loginTab = document.querySelector('[data-auth-tab="login"]');
+      const registerTab = document.querySelector('[data-auth-tab="register"]');
+      const loginForm = document.getElementById('loginForm');
+      const registerForm = document.getElementById('registerForm');
+      const switchTab = (tab) => {
+        const isRegister = tab === 'register';
+        loginTab?.classList.toggle('active', !isRegister);
+        registerTab?.classList.toggle('active', isRegister);
+        loginForm?.classList.toggle('hidden', isRegister);
+        registerForm?.classList.toggle('hidden', !isRegister);
+      };
+      loginTab?.addEventListener('click', (e) => { e.preventDefault(); switchTab('login'); });
+      registerTab?.addEventListener('click', (e) => { e.preventDefault(); switchTab('register'); });
+    })();
+  </script>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

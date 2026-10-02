@@ -1,0 +1,10 @@
+{
+  "name": "CoinVault",
+  "short_name": "CoinVault",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#070c16",
+  "theme_color": "#0b1220",
+  "description": "Mobile-first live coin portfolio app using Firebase and public Binance market data.",
+  "icons": []
+}
